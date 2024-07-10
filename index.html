@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Run Code</title>
+    <style>
+        input, button {
+            font-size: 16px;
+            padding: 10px;
+            margin: 5px 0;
+        }
+        button {
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <h1>Run Code</h1>
@@ -42,9 +52,6 @@
                                                 Math.floor(y * 2.5 * (100 + (comb + combCustom))) +
                                                 Math.floor(z * 3 * (100 + (star + starCustom))) === goal) {
                                                 output.textContent += `x=${x}, y=${y}, z=${z}, play=${playCustom}, comb=${combCustom}, star=${starCustom}\n`;
-                                                if (goal === 77777) {
-                                                    output.textContent += `Interpretation: ${interpretXY(x, y)}\n`;
-                                                }
                                             }
                                         }
                                     }
@@ -52,29 +59,6 @@
                             }
                         }
                     }
-                }
-
-                function interpretXY(x, y) {
-                    let interpretation = `${y} = `;
-                    let remaining = y;
-                    let currentSum = 0;
-                    let i = 1;
-                    while (currentSum < y) {
-                        if (remaining >= i) {
-                            currentSum += i;
-                            remaining -= i;
-                            if (currentSum === y) {
-                                interpretation += `(${Array.from(Array(i), (_, k) => k + 1).join('+')})`;
-                            } else {
-                                interpretation += `(${Array.from(Array(i), (_, k) => k + 1).join('+')}) + `;
-                            }
-                        }
-                        i++;
-                    }
-                    if (currentSum !== y) {
-                        interpretation += `no recipe for x and y`;
-                    }
-                    return interpretation;
                 }
 
                 findSol(goal);
