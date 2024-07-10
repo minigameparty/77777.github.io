@@ -113,7 +113,7 @@
             <button type="button" onclick="runCode(777777)">
 				<img class="defeat"/>Run for 777777
 			</button>
-            <button type="button" onclick="runCode(clump)">
+            <button type="button" onclick="runCode('clump')">
 				<img class="clump"/>Run for 7777
 			</button>
         </form>
@@ -134,7 +134,7 @@
                 findSol(goal, play, comb, star, output, 16, 10);
             } else if (goal === 777777) {
                 findSol(goal, play, comb, star, output, 8, 120, 10, 80);
-            } else if (goal === clump) {
+            } else if (goal === 'clump') {
                 findSolClump(7777, play, comb, output, 3, 30, 1, 50)
             }
         }
@@ -159,7 +159,7 @@
                 }
             }
         }
-        
+
         function findSolClump(goal, play, comb, output, stepMax, xMax, yMin = 1, yMax) {
             output.textContent += `Goal: ${goal}\n`;
             for (let step = 0; step < stepMax; step++) {

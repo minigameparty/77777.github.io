@@ -1,1 +1,1 @@
-# 77777.github.io
+# 77777 calculator of minigameparty
