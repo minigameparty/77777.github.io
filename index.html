@@ -14,12 +14,14 @@
         <input type="number" id="comb" name="comb" step="0.1" required><br><br>
         <label for="star">Star:</label>
         <input type="number" id="star" name="star" step="0.1" required><br><br>
-        <button type="button" onclick="runCode()">Run</button>
+        <button type="button" onclick="runCode(7777)">Run for 7777</button>
+        <button type="button" onclick="runCode(77777)">Run for 77777</button>
+        <button type="button" onclick="runCode(777777)">Run for 777777</button>
     </form>
     <pre id="output"></pre>
 
     <script>
-        function runCode() {
+        function runCode(goal) {
             const play = parseFloat(document.getElementById('play').value);
             const comb = parseFloat(document.getElementById('comb').value);
             const star = parseFloat(document.getElementById('star').value);
@@ -27,18 +29,20 @@
             const output = document.getElementById('output');
             output.textContent = '';
 
-            function findSol(goal) {
-                output.textContent += `Goal: ${goal}\n`;
-                for (let x = 1; x < 14; x++) {
-                    for (let y = x; y < x * (x + 1) / 2; y++) {
-                        for (let z = 0; z < 10; z++) {
-                            for (let playCustom = 0; playCustom < costumeDepth; playCustom++) {
-                                for (let combCustom = 0; combCustom < costumeDepth; combCustom++) {
-                                    for (let starCustom = 0; starCustom < costumeDepth; starCustom++) {
-                                        if (Math.floor(x * (x + 1) / 2 * 3 * (100 + (play + playCustom))) +
-                                            Math.floor(y * 2.5 * (100 + (comb + combCustom))) +
-                                            Math.floor(z * 3 * (100 + (star + starCustom))) === goal) {
-                                            output.textContent += `x=${x}, y=${y}, z=${z}, play=${playCustom}, comb=${combCustom}, star=${starCustom}\n`;
+            if (goal === 7777 || goal === 77777) {
+                function findSol(goal) {
+                    output.textContent += `Goal: ${goal}\n`;
+                    for (let x = 1; x < 14; x++) {
+                        for (let y = x; y < x * (x + 1) / 2; y++) {
+                            for (let z = 0; z < 10; z++) {
+                                for (let playCustom = 0; playCustom < costumeDepth; playCustom++) {
+                                    for (let combCustom = 0; combCustom < costumeDepth; combCustom++) {
+                                        for (let starCustom = 0; starCustom < costumeDepth; starCustom++) {
+                                            if (Math.floor(x * (x + 1) / 2 * 3 * (100 + (play + playCustom))) +
+                                                Math.floor(y * 2.5 * (100 + (comb + combCustom))) +
+                                                Math.floor(z * 3 * (100 + (star + starCustom))) === goal) {
+                                                output.textContent += `x=${x}, y=${y}, z=${z}, play=${playCustom}, comb=${combCustom}, star=${starCustom}\n`;
+                                            }
                                         }
                                     }
                                 }
@@ -46,10 +50,34 @@
                         }
                     }
                 }
-            }
 
-            findSol(7777);
-            findSol(77777);
+                findSol(goal);
+            } else if (goal === 777777) {
+                function findSol(goal) {
+                    output.textContent += `Goal: ${goal}\n`;
+                    for (let x = 3; x < 8; x++) {
+                        output.textContent += `x=${x}\n`;
+                        for (let y = 10; y < 80; y++) {
+                            for (let z = 0; z < 120; z++) {
+                                for (let playCustom = 0; playCustom < costumeDepth; playCustom++) {
+                                    let playScore = Math.floor((250 * x + 100) * (100 + (play + playCustom)));
+                                    for (let combCustom = 0; combCustom < costumeDepth; combCustom++) {
+                                        let combScore = Math.floor(5 * (10 * y - 45) * (100 + (comb + combCustom)));
+                                        for (let starCustom = 0; starCustom < costumeDepth; starCustom++) {
+                                            let starScore = Math.floor(z * 3 * (100 + (star + starCustom)));
+                                            if (playScore + combScore + starScore === goal) {
+                                                output.textContent += `x=${x}, y=${y}, z=${z}, play=${playCustom}, comb=${combCustom}, star=${starCustom}\n`;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                findSol(goal);
+            }
         }
     </script>
 </body>
