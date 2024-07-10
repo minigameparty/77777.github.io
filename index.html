@@ -194,7 +194,7 @@
             }
         }
 
-        function calculateScoreClump(step, x, y, play, comb, star, goal) {
+        function calculateScoreClump(step, x, y, play, comb, goal) {
             const playScore = Math.floor((3.5 * step + 2 * x) * (100 + play));
             const combScore = Math.floor(y * 0.18 * (100 + comb));
             return playScore + combScore === goal;
