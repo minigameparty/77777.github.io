@@ -98,11 +98,11 @@
         <h1>Minigame Party Hidden 7777~777777</h1>
         <form id="inputForm">
             <label for="play">Play</label>
-            <input type="number" id="play" name="play" step="0.1" required>
+            <input type="number" id="play" name="play" step="0.1" required value="">
             <label for="comb">Combo</label>
-            <input type="number" id="comb" name="comb" step="0.1" required>
+            <input type="number" id="comb" name="comb" step="0.1" required value="">
             <label for="star">Star</label>
-            <input type="number" id="star" name="star" step="0.1" required>
+            <input type="number" id="star" name="star" step="0.1" required value="">
 			
 			<button type="button" onclick="runCode(7777)">
 				<img class="together"/>Run for 7777
@@ -148,9 +148,26 @@
                             for (let combCustom = 0; combCustom < costumeDepth; combCustom++) {
                                 for (let starCustom = 0; starCustom < costumeDepth; starCustom++) {
                                     if (calculateScore(x, y, z, play + playCustom, comb + combCustom, star + starCustom, goal)) {
-                                        output.textContent += `-----------------------------------\n`;
-                                        output.textContent += `x = ${x}, y = ${y}, z = ${z}\n`;
-                                        output.textContent += `PLAY = ${playCustom}%, COMBO = ${combCustom}%, STAR = ${starCustom}%\n`;
+									
+										let msg = '';
+										msg += `---------------------------------------\n`;
+										msg += `x = ${x}, y = ${y}, z = ${z}\n`;
+										msg += `[Custom]\nPLAY = [${playCustom}]%, COMBO = [${combCustom}]%, STAR = [${starCustom}]%\n`;
+										
+										if (goal === 7777 || goal === 77777) {
+											let result = findComboCombination(x, y);
+											if (result) {
+												msg += `[Play]\nCombo Count = [${result.join(', ')}]\n`;
+												msg += `Star  Count = [${z}]\n`;
+											}
+											else {
+												msg = ``;
+											}
+										}
+										else {
+											msg += `[Play]\nDied in stage [${x + 1}] boss\nCombo Count = [${y}]\nStar  Count = [${z}]\n`;
+										}
+										output.textContent += msg;
                                     }
                                 }
                             }
@@ -162,15 +179,35 @@
 
         function findSolClump(goal, play, comb, output, stepMax, xMax, yMin = 1, yMax) {
             output.textContent += `Goal: ${goal}\n`;
+            output.textContent += `EX) Combo Count : [4, 'No Combo', 2] -> Start~ dadadada~~'\da'\dada \n    Step  Count : [1]    -> Ttugbaegi Count \n`;
             for (let step = 0; step < stepMax; step++) {
                 for (let y = 1; y < yMax; y++) {
                     for (let x = 2; x < Math.min(xMax, y); x++) {
-                        for (let playCustom = 0; playCustom < costumeDepth; playCustom++) {
+                        for (let playCustom = 0; playCustom < costumeDepth + 12; playCustom++) {
                             for (let combCustom = 0; combCustom < costumeDepth; combCustom++) {
                                 if (calculateScoreClump(step, x, y, play + playCustom, comb + combCustom, goal)) {
-                                    output.textContent += `-----------------------------------\n`;
-                                    output.textContent += `step = ${step}, x = ${x}, y = ${y}\n`;
-                                    output.textContent += `PLAY = ${playCustom}%, COMBO = ${combCustom}%\n`;
+									let msg = '';
+									msg += `---------------------------------------\n`;
+									msg += `step = ${step}, x = ${x}, y = ${y}\n`;
+									msg += `[Custom]\nPLAY = [${playCustom}]%, COMBO = [${combCustom}]%\n`;
+									
+									let result = findComboCombination(x, y);
+									if (result && result.length == 1) {
+										// 콤보 한번에 끝나는 경우
+										msg += `[Play]\nCombo Count = [${result.join(', ')}]\nStep  Count = [${step}]\n`;
+									}
+									else {
+										result = findComboCombination(x - 1, y - 1);
+										if (result && result.length <= 2) {
+											result.reverse();
+											result.splice(1, 0, 'No Combo');
+											msg += `[Play]\nCombo Count = [${result.join(', ')}]\nStep  Count = [${step}]\n`;
+										}
+										else {
+											msg = ``;
+										}
+									}
+									output.textContent += msg;
                                 }
                             }
                         }
@@ -199,6 +236,50 @@
             const combScore = Math.floor(y * 0.18 * (100 + comb));
             return playScore + combScore === goal;
         }
+		
+		function calculateComboScore(combo) {
+			let score = 0;
+			for (let i = 1; i <= combo; i++) {
+				score += i;
+			}
+			return score;
+		}
+
+		function findComboCombination(totalCombos, targetScore) {
+			const combos = Array.from({ length: totalCombos }, (_, i) => i + 1);
+			const scores = combos.map(calculateComboScore);
+			
+			function backtrack(comboIndex, remainingCombos, remainingScore, currentCombination) {
+				if (remainingCombos === 0 && remainingScore === 0) {
+					return currentCombination;
+				}
+				if (comboIndex >= combos.length || remainingCombos < 0 || remainingScore < 0) {
+					return null;
+				}
+			
+				const includeCurrent = backtrack(
+					comboIndex,
+					remainingCombos - combos[comboIndex],
+					remainingScore - scores[comboIndex],
+					currentCombination.concat(combos[comboIndex])
+				);
+
+				if (includeCurrent) {
+					return includeCurrent;
+				}
+
+				const excludeCurrent = backtrack(
+					comboIndex + 1,
+					remainingCombos,
+					remainingScore,
+					currentCombination
+				);
+
+				return excludeCurrent;
+			}
+
+			return backtrack(0, totalCombos, targetScore, []);
+		}
     </script>
 </body>
 </html>
