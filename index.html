@@ -121,7 +121,7 @@
 		
 	</div>
     <script>
-        const costumeDepth = 13;
+        const costumeDepth = 5;
 
         function runCode(goal) {
             const play = parseFloat(document.getElementById('play').value);
@@ -197,15 +197,17 @@
 										msg += `[Play]\nCombo Count = [${result.join(', ')}]\nStep  Count = [${step}]\n`;
 									}
 									else {
-										result = findComboCombination(x - 1, y - 1);
-										if (result && result.length <= 2) {
-											result.reverse();
-											result.splice(1, 0, 'No Combo');
-											msg += `[Play]\nCombo Count = [${result.join(', ')}]\nStep  Count = [${step}]\n`;
-										}
-										else {
-											msg = ``;
-										}
+                                        for (let numPartition = 1; numPartition <= 5; numPartition++){
+                                            // numPartition : No Combo 제외한 분할 개수
+                                            result = findComboCombination(x - numPartition + 1, y);
+                                            if (result && result.length < 5) {
+                                                result.reverse();
+                                                msg += `[Play]\nCombo Count = [${'No Combo, '.repeat(numPartition - result.length)}${result.join(', No Combo, ')}]\nStep  Count = [${step}]\n`;
+                                            }
+                                        }
+                                        if (msg.slice(-2,-1) === '%') {
+                                            msg = ``;
+                                        }
 									}
 									output.textContent += msg;
                                 }
@@ -254,6 +256,7 @@
 					return currentCombination;
 				}
 				if (comboIndex >= combos.length || remainingCombos < 0 || remainingScore < 0) {
+                // if (comboIndex === 0 || remainingCombos < 0 || remainingScore < 0) {
 					return null;
 				}
 			
