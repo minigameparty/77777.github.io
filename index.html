@@ -155,7 +155,7 @@
 										msg += `[Custom]\nPLAY = [${playCustom}]%, COMBO = [${combCustom}]%, STAR = [${starCustom}]%\n`;
 										
 										if (goal === 7777 || goal === 77777) {
-											let result = findComboCombination(x, y);
+											let result = findComboCombination(x, y, 5);
 											if (result) {
 												msg += `[Play]\nCombo Count = [${result.join(', ')}]\n`;
 												msg += `Star  Count = [${z}]\n`;
@@ -191,18 +191,17 @@
 									msg += `step = ${step}, x = ${x}, y = ${y}\n`;
 									msg += `[Custom]\nPLAY = [${playCustom}]%, COMBO = [${combCustom}]%\n`;
 									
-									let result = findComboCombination(x, y);
+									let result = findComboCombination(x, y, 1);
 									if (result && result.length == 1) {
 										// 콤보 한번에 끝나는 경우
 										msg += `[Play]\nCombo Count = [${result.join(', ')}]\nStep  Count = [${step}]\n`;
 									}
 									else {
-                                        for (let numPartition = 1; numPartition <= 5; numPartition++){
-                                            // numPartition : No Combo 제외한 분할 개수
-                                            result = findComboCombination(x - numPartition + 1, y);
-                                            if (result && result.length < 5) {
-                                                result.reverse();
-                                                msg += `[Play]\nCombo Count = [${'No Combo, '.repeat(numPartition - result.length)}${result.join(', No Combo, ')}]\nStep  Count = [${step}]\n`;
+                                        for (let numNoCombos = 1; numNoCombos < x - 5; numNoCombos++) {
+                                            result = findComboCombination(x - numNoCombos, y, 3);
+                                            if (result && result.length <= numNoCombos + 1 && numNoCombos - result.length < 3) {
+                                                msg += `[Play]\nCombo Count = [${'No Combo, '.repeat(numNoCombos - result.length + 1)}${result.join(', No Combo, ')}]\nStep  Count = [${step}]\n`;
+                                                break;
                                             }
                                         }
                                         if (msg.slice(-2,-1) === '%') {
@@ -247,18 +246,25 @@
 			return score;
 		}
 
-		function findComboCombination(totalCombos, targetScore) {
+		function findComboCombination(totalCombos, targetScore, thresholdLength = 8) {
 			const combos = Array.from({ length: totalCombos }, (_, i) => i + 1);
 			const scores = combos.map(calculateComboScore);
-			
+
 			function backtrack(comboIndex, remainingCombos, remainingScore, currentCombination) {
 				if (remainingCombos === 0 && remainingScore === 0) {
 					return currentCombination;
 				}
-				if (comboIndex >= combos.length || remainingCombos < 0 || remainingScore < 0) {
-                // if (comboIndex === 0 || remainingCombos < 0 || remainingScore < 0) {
+                if (comboIndex < 0 || remainingCombos < 0 || remainingScore < 0) {
 					return null;
 				}
+                if (scores[remainingCombos] < remainingScore) {
+                    // impossible case to find combination
+                    return null;
+                }
+                if (currentCombination.length >= thresholdLength) {
+                    // kill too long combinations
+                    return null;
+                }
 			
 				const includeCurrent = backtrack(
 					comboIndex,
@@ -272,7 +278,7 @@
 				}
 
 				const excludeCurrent = backtrack(
-					comboIndex + 1,
+					comboIndex - 1,
 					remainingCombos,
 					remainingScore,
 					currentCombination
@@ -281,7 +287,7 @@
 				return excludeCurrent;
 			}
 
-			return backtrack(0, totalCombos, targetScore, []);
+			return backtrack(totalCombos - 1, totalCombos, targetScore, []);
 		}
     </script>
 </body>
